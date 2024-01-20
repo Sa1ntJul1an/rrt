@@ -17,6 +17,9 @@ const int HEIGHT = 1000;
 
 const int GROWTH_FACTOR = 100;
 
+const vector<float> START = {HEIGHT / 2, 20};
+const vector<float> END = {HEIGHT - 20, WIDTH - 10};
+
 
 int main(){
 
@@ -32,6 +35,8 @@ int main(){
     RenderWindow renderWindow(VideoMode(WIDTH, HEIGHT), "RRT");
     renderWindow.setFramerateLimit(10);
     // =======================================================================
+
+    RRT rrt(renderWindow, GROWTH_FACTOR, START, END);
 
     Font font;
     FileInputStream fontIn;
@@ -56,6 +61,7 @@ int main(){
 
         if (rrt_running){
             iteration ++;
+            rrt.update();
 
         }
 
