@@ -16,6 +16,7 @@ const int WIDTH = 1900;
 const int HEIGHT = 1000;
 
 const int GROWTH_FACTOR = 100;
+const float TOLERANCE = 10;
 
 const vector<float> START = {HEIGHT / 2, 20};
 const vector<float> END = {HEIGHT - 20, WIDTH - 10};
@@ -36,7 +37,7 @@ int main(){
     renderWindow.setFramerateLimit(10);
     // =======================================================================
 
-    RRT rrt(renderWindow, GROWTH_FACTOR, START, END);
+    RRT rrt(renderWindow, GROWTH_FACTOR, START, END, TOLERANCE);
 
     Font font;
     FileInputStream fontIn;

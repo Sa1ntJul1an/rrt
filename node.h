@@ -11,6 +11,8 @@ class Node{
 
         Node* getParent();
         std::vector<float> getPosition();
+        void setPosition(std::vector<float>);
+        void setParent(Node*);
 
     private:
         std::vector<float> _position;

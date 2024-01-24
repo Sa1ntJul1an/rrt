@@ -23,3 +23,11 @@ Node* Node::getParent(){
 std::vector<float> Node::getPosition(){
     return _position;
 }
+
+void Node::setPosition(std::vector<float> position){
+    _position = position;
+}
+
+void Node::setParent(Node* parent){
+    _parent = parent;
+}
