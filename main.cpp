@@ -31,7 +31,7 @@ const vector<float> END = {HEIGHT - 20, WIDTH - 10};
 
 int main(){
 
-    vector<float> mousePosition;
+    Vector2i mousePosition;
 
     bool rrt_running = false;
     int iteration = 0;
@@ -48,11 +48,11 @@ int main(){
 
     // obstacle testing
     //=============================================
-    RectangleShape obstacle1;
-    obstacle1.setFillColor(Color::Green);
-    obstacle1.setSize(Vector2f(200, 100));
-    obstacle1.setPosition(Vector2f(900, 700));
-    rrt.addObstacle(obstacle1);
+    //RectangleShape obstacle1;
+    //obstacle1.setFillColor(Color::Green);
+    //obstacle1.setSize(Vector2f(200, 100));
+    //obstacle1.setPosition(Vector2f(900, 700));
+    //rrt.addObstacle(obstacle1);
     //=============================================
 
     Font font;
@@ -66,24 +66,46 @@ int main(){
     iterationText.setFont(font);
     iterationText.setCharacterSize(30);
 
+    bool drawing_obstacle = false;
+    vector<RectangleShape> obstacle_previews;
+    RectangleShape obstacle_preview;
+    obstacle_preview.setFillColor(Color::Green);
+    Vector2i obstacle_corner;
+
     while(renderWindow.isOpen()){
 
-        mousePosition = {float(Mouse::getPosition(renderWindow).x), float(Mouse::getPosition(renderWindow).y)};
+        renderWindow.clear();
+
+        mousePosition = Mouse::getPosition(renderWindow);
+
+        if (drawing_obstacle){
+            obstacle_preview.setSize(Vector2f(mousePosition.x - obstacle_corner.x, mousePosition.y - obstacle_corner.y));
+            renderWindow.draw(obstacle_preview);
+        }
 
         if (Mouse::isButtonPressed(Mouse::Left)){
-            // do shit
+            if (!drawing_obstacle){     // if not drawing an obstacle and mouse pressed, begin drawing it
+                obstacle_corner = mousePosition;
+                obstacle_preview.setPosition(Vector2f(obstacle_corner.x, obstacle_corner.y));
+                drawing_obstacle = true;
+            } else{                     // if drawing an obstacle and mouse clicked, freeze obstacle, add it to vector of obstacle previews and add to rrt state space
+                obstacle_previews.push_back(obstacle_preview);
+                rrt.addObstacle(obstacle_preview);
+                drawing_obstacle = false;
+            }
         } else if (Mouse::isButtonPressed(Mouse::Right)) {
             
         }
 
+        // RRT ====================================================
         if (rrt_running){
             iteration ++;
-            renderWindow.clear();
             rrt.update();
 
             iterationText.setString("Iteration: " + to_string(iteration));
             renderWindow.draw(iterationText);
         }
+        // =========================================================
 
         // KEYBOARD EVENTS =========================================
         if (Keyboard::isKeyPressed(Keyboard::Space)){   // space to pause / unpause
@@ -107,8 +129,17 @@ int main(){
         }
         // ==========================================================
 
-        renderWindow.display();
+        // DRAW OBSTACLE PREVIEWS ===================================
+        if (!rrt_running){
+            for (int i = 0; i < obstacle_previews.size(); i++){
+                renderWindow.draw(obstacle_previews.at(i));
+            }
+        }
+        // ==========================================================
 
+        rrt.draw();
+
+        renderWindow.display();
     }
 
     return 0;

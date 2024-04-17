@@ -32,7 +32,6 @@ std::vector<float> Node::getPosition() const {
 }
 
 void Node::setPosition(std::vector<float> position){
-    std::cout << std::to_string(position.at(0)) << std::endl;
     _position = position;
 }
 

@@ -130,8 +130,6 @@ void RRT::update(){
 
     _nodes.push_back(newNode);
     
-    draw();
-
     // is it within range of end goal? 
         // yes -> done, back trace parents to start node 
         // no -> continue

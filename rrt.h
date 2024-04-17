@@ -13,7 +13,8 @@ class RRT{
 
         void addObstacle(sf::RectangleShape);
         float getEuclideanDistance(std::vector<float>, std::vector<float>);
-
+        
+        void draw();
         void update();
 
     private:
@@ -36,8 +37,6 @@ class RRT{
         Node* getClosestNode(Node);
         bool isCollision(std::vector<float>);
         bool isObstacleInPath(Node, Node);
-        void draw();
-
 };
 
 #endif /* !RRT_HEADER */
