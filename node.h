@@ -8,9 +8,10 @@ class Node{
     public:
         Node();
         Node(std::vector<float>, Node*, std::set<Node*>);
+        Node(const Node&);   // copy constructor
 
-        Node* getParent();
-        std::vector<float> getPosition();
+        Node* getParent() const;
+        std::vector<float> getPosition() const;
         void setPosition(std::vector<float>);
         void setParent(Node*);
 

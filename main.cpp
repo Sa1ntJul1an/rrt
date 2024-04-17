@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 
+#include "node.h"
 #include "rrt.h"
 
 // mingw32-make.exe
@@ -15,8 +16,13 @@ using namespace std;
 const int WIDTH = 1900;
 const int HEIGHT = 1000;
 
+vector<int> STATE_SPACE = {WIDTH, HEIGHT};
+
 const int GROWTH_FACTOR = 100;
 const float TOLERANCE = 10;
+
+float LINE_WIDTH = 3.0;
+float NODE_RADIUS = 4.0;
 
 const vector<float> START = {HEIGHT / 2, 20};
 const vector<float> END = {HEIGHT - 20, WIDTH - 10};
@@ -62,10 +68,12 @@ int main(){
 
         if (rrt_running){
             iteration ++;
+            renderWindow.clear();
             rrt.update();
 
+            iterationText.setString("Iteration: " + to_string(iteration));
+            renderWindow.draw(iterationText);
         }
-
 
         // KEYBOARD EVENTS =========================================
         if (Keyboard::isKeyPressed(Keyboard::Space)){   // space to pause / unpause
@@ -88,17 +96,6 @@ int main(){
             }
         }
         // ==========================================================
-
-
-        // DRAW 
-        // ==========================================================
-        renderWindow.clear();
-
-        // ==========================================================
-
-        iterationText.setString("Iteration: " + to_string(iteration));
-
-        renderWindow.draw(iterationText);
 
         renderWindow.display();
 

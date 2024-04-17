@@ -12,7 +12,7 @@
 RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> start, std::vector<float> end, float tolerance)
     : _stateSpace(stateSpace) {
     
-    std::vector<sf::RectangleShape> _obstacles = {};
+    //std::vector<sf::RectangleShape> _obstacles = {};
     _growthFactor = growthFactor;
     _tolerance = tolerance;
 
@@ -42,7 +42,6 @@ void RRT::normalizeNodeToGrowthFactor(Node closestNode, Node& newNode){
 
         newNode.setPosition({new_x, new_y});
     }
-    return;
 }
 
 float RRT::getEuclideanDistance(std::vector<float> node1Position, std::vector<float> node2Position){
@@ -53,54 +52,123 @@ float RRT::getEuclideanDistance(std::vector<float> node1Position, std::vector<fl
     return distance;
 }
 
-void RRT::getClosestNode(Node newNode, Node& closestNode){
-    closestNode = _nodes.at(0);
-    float distanceToClosest = getEuclideanDistance(closestNode.getPosition(), newNode.getPosition());
+Node RRT::sampleStateSpace(){
+    // generate new point in state space
+    std::uniform_real_distribution<float> x_dist(0, _stateSpace.getSize().x);
+    std::uniform_real_distribution<float> y_dist(0,  _stateSpace.getSize().y);
+
+    std::vector<float> newPoint = {x_dist(_mt), y_dist(_mt)};
+
+    std::set<Node*> children;
+    Node newNode = Node(newPoint, nullptr, children);
+    return newNode;
+}
+
+Node* RRT::getClosestNode(Node newNode){
+    if (_nodes.empty()){
+        return nullptr;
+    }
+
+    Node* closestNode = &_nodes.at(0);
+    float distanceToClosest = getEuclideanDistance(closestNode->getPosition(), newNode.getPosition());
     for (int i = 0; i < _nodes.size(); i++){
-        Node currentNode = _nodes.at(i);
-        float currentDistance = getEuclideanDistance(currentNode.getPosition(), newNode.getPosition());
+        Node* currentNode = &_nodes.at(i);
+        float currentDistance = getEuclideanDistance(currentNode->getPosition(), newNode.getPosition());
 
         if (currentDistance < distanceToClosest){
             distanceToClosest = currentDistance;
             closestNode = currentNode;
         }
     }
-    return;
+    return closestNode;
 }
 
 bool RRT::isCollision(std::vector<float>){
     return false;
 }
 
-void RRT::addObstacle(sf::RectangleShape obstacle){
-    _obstacles.push_back(obstacle);
-}
+//void RRT::addObstacle(sf::RectangleShape obstacle){
+//    _obstacles.push_back(obstacle);
+//}
 
 void RRT::update(){
-    // steps: generate new point
-    std::uniform_real_distribution<float> x_dist(0, _stateSpace.getSize().x);
-    std::uniform_real_distribution<float> y_dist(0, _stateSpace.getSize().y);
-
-    std::vector<float> newPoint = {x_dist(_mt), y_dist(_mt)};
-
-    std::set<Node*> children;
-    Node newNode(newPoint, nullptr, children);
+    // generate new point
+    Node newNode = sampleStateSpace();
 
     // find closest point
-    Node closestNode;
-    getClosestNode(newNode, closestNode);
+    Node* closestNode = getClosestNode(newNode);
 
     // normalize it to length of growth factor
-    normalizeNodeToGrowthFactor(closestNode, newNode);
+    normalizeNodeToGrowthFactor(*closestNode, newNode);
 
     // check for collision with obstacles between closest point and current point
         // if collision -> toss out point, start again
         // no collision -> add to tree, continue
-    
-    newNode.setParent(&closestNode);
+
+    Node* parent = new Node(*closestNode);
+    newNode.setParent(parent);
+
+    //std::cout << std::to_string(newNode.getParent()->getPosition()[0]) << std::endl;
+
     _nodes.push_back(newNode);
+    
+    draw();
 
     // is it within range of end goal? 
         // yes -> done, back trace parents to start node 
         // no -> continue
+}
+
+void RRT::draw(){
+
+    float LINE_WIDTH = 3.0;
+    float NODE_RADIUS = 4.0;
+
+
+    if (_nodes.size() < 2){
+        return;
+    }
+
+    // DRAW 
+    // ==========================================================
+    for (int i = 1; i < _nodes.size(); i++){
+
+        Node currentNode = _nodes.at(i);
+
+        Node* parent = currentNode.getParent();
+        std::vector<float> parent_position;
+
+        if (parent != nullptr && (parent->getPosition().size() > 0)){
+            parent_position = parent->getPosition();
+        } else {
+            continue;
+        }
+
+        std::vector<float> newNode_position = currentNode.getPosition();
+
+        std::cout << "Node position: " << std::to_string(newNode_position.at(0)) << " " << std::to_string(newNode_position.at(1)) << std::endl;
+        std::cout << "Parent position: " << std::to_string(parent_position.at(0)) << " " << std::to_string(parent_position.at(1)) << std::endl;
+
+        float delta_x = parent_position.at(0) - newNode_position.at(0);
+        float delta_y = parent_position.at(1) - newNode_position.at(1);
+
+        float theta = (180 / 3.141592654) * atan2(delta_y, delta_x);
+
+        float distance = getEuclideanDistance(parent_position, newNode_position);
+
+        sf::RectangleShape line;
+        line.setSize(sf::Vector2f(distance, LINE_WIDTH));
+        line.setFillColor(sf::Color::Yellow);
+        line.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
+        line.setRotation(theta);
+
+        _stateSpace.draw(line);
+
+        sf::CircleShape point;
+        point.setRadius(NODE_RADIUS);
+        point.setFillColor(sf::Color::Red);
+        point.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
+
+        _stateSpace.draw(point);
+    }
 }

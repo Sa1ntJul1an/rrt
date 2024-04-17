@@ -1,23 +1,24 @@
 #ifndef RRT_HEADER
 #define RRT_HEADER
 
-#include <SFML/Graphics.hpp>
 #include <vector>
 #include <random>
+#include <SFML/Graphics.hpp>
 
 #include "node.h"
 
 class RRT{
     public:
-        RRT(sf::RenderWindow& stateSpace, float, std::vector<float>, std::vector<float>, float);
+        RRT(sf::RenderWindow&, float, std::vector<float>, std::vector<float>, float);
 
-        void addObstacle(sf::RectangleShape);
+        //void addObstacle(sf::RectangleShape);
+        float getEuclideanDistance(std::vector<float>, std::vector<float>);
 
         void update();
 
     private:
         sf::RenderWindow& _stateSpace;
-        std::vector<sf::RectangleShape> _obstacles;
+        //std::vector<sf::RectangleShape> _obstacles;
 
         float _growthFactor;
         float _tolerance;
@@ -29,10 +30,11 @@ class RRT{
 
         std::mt19937 _mt;
 
+        Node sampleStateSpace();
         void normalizeNodeToGrowthFactor(Node, Node&);
-        float getEuclideanDistance(std::vector<float>, std::vector<float>);
-        void getClosestNode(Node, Node&);
+        Node* getClosestNode(Node);
         bool isCollision(std::vector<float>);
+        void draw();
 
 };
 
