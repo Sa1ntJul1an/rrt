@@ -16,10 +16,11 @@ using namespace std;
 const int WIDTH = 1900;
 const int HEIGHT = 1000;
 
-vector<int> STATE_SPACE = {WIDTH, HEIGHT};
+vector<int> STATE_SPACE = {WIDTH, HEIGHT};      // render window state space, contains obstacles, start, and end position
 
-const int GROWTH_FACTOR = 100;
-const float TOLERANCE = 10;
+const int GROWTH_FACTOR = 100;                  // growth factor (euclidean distance) of new nodes being added to tree
+const float TOLERANCE = 10;                     // euclidean distance tolerance to end position
+const int OBSTACLE_DECETION_SEGMENTS = 10;      // number of segments between new node and closest node to check for collision
 
 float LINE_WIDTH = 3.0;
 float NODE_RADIUS = 4.0;
@@ -43,7 +44,16 @@ int main(){
     renderWindow.setFramerateLimit(10);
     // =======================================================================
 
-    RRT rrt(renderWindow, GROWTH_FACTOR, START, END, TOLERANCE);
+    RRT rrt(renderWindow, GROWTH_FACTOR, START, END, TOLERANCE, OBSTACLE_DECETION_SEGMENTS);
+
+    // obstacle testing
+    //=============================================
+    RectangleShape obstacle1;
+    obstacle1.setFillColor(Color::Green);
+    obstacle1.setSize(Vector2f(200, 100));
+    obstacle1.setPosition(Vector2f(900, 700));
+    rrt.addObstacle(obstacle1);
+    //=============================================
 
     Font font;
     FileInputStream fontIn;

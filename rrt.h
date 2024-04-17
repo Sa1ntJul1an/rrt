@@ -9,19 +9,20 @@
 
 class RRT{
     public:
-        RRT(sf::RenderWindow&, float, std::vector<float>, std::vector<float>, float);
+        RRT(sf::RenderWindow&, float, std::vector<float>, std::vector<float>, float, int);
 
-        //void addObstacle(sf::RectangleShape);
+        void addObstacle(sf::RectangleShape);
         float getEuclideanDistance(std::vector<float>, std::vector<float>);
 
         void update();
 
     private:
         sf::RenderWindow& _stateSpace;
-        //std::vector<sf::RectangleShape> _obstacles;
+        std::vector<sf::RectangleShape> _obstacles;
 
         float _growthFactor;
         float _tolerance;
+        int _obstacle_detection_segments;
         std::vector<float> _startPosition;
         std::vector<float> _endPosition;
 
@@ -34,6 +35,7 @@ class RRT{
         void normalizeNodeToGrowthFactor(Node, Node&);
         Node* getClosestNode(Node);
         bool isCollision(std::vector<float>);
+        bool isObstacleInPath(Node, Node);
         void draw();
 
 };

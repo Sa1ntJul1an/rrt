@@ -9,12 +9,13 @@
 
 #include <iostream>
 
-RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> start, std::vector<float> end, float tolerance)
+RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> start, std::vector<float> end, float tolerance, int obstacle_detection_segments)
     : _stateSpace(stateSpace) {
     
-    //std::vector<sf::RectangleShape> _obstacles = {};
+    std::vector<sf::RectangleShape> _obstacles = {};
     _growthFactor = growthFactor;
     _tolerance = tolerance;
+    _obstacle_detection_segments = obstacle_detection_segments;
 
     _startPosition = start;
     _endPosition = end;
@@ -83,13 +84,29 @@ Node* RRT::getClosestNode(Node newNode){
     return closestNode;
 }
 
-bool RRT::isCollision(std::vector<float>){
+bool RRT::isCollision(std::vector<float> point){
+    for (int i = 0; i < _obstacles.size(); i++){        // for every obstacle, if the point is within the obstacles global bounds
+        if (_obstacles.at(i).getGlobalBounds().contains(sf::Vector2f(point.at(0), point.at(1)))) {
+            return true;                                // return true
+        }
+    }
+    return false;                                       // return false by default
+}
+
+bool RRT::isObstacleInPath(Node parent, Node newNode){
+    std::vector<float> parent_position = parent.getPosition();
+    std::vector<float> newNode_position = newNode.getPosition();
+
+    if (isCollision(newNode_position)){
+        return true;
+    }
+    
     return false;
 }
 
-//void RRT::addObstacle(sf::RectangleShape obstacle){
-//    _obstacles.push_back(obstacle);
-//}
+void RRT::addObstacle(sf::RectangleShape obstacle){
+    _obstacles.push_back(obstacle);
+}
 
 void RRT::update(){
     // generate new point
@@ -102,8 +119,9 @@ void RRT::update(){
     normalizeNodeToGrowthFactor(*closestNode, newNode);
 
     // check for collision with obstacles between closest point and current point
-        // if collision -> toss out point, start again
-        // no collision -> add to tree, continue
+    if (isObstacleInPath(*closestNode, newNode)){
+        return;     // if there is osbtacle in path, return, do not add it to tree
+    }
 
     Node* parent = new Node(*closestNode);
     newNode.setParent(parent);
@@ -129,8 +147,8 @@ void RRT::draw(){
         return;
     }
 
-    // DRAW 
-    // ==========================================================
+    // DRAW NODES AND CONNECTIONS
+    // =================================================================================
     for (int i = 1; i < _nodes.size(); i++){
 
         Node currentNode = _nodes.at(i);
@@ -171,4 +189,13 @@ void RRT::draw(){
 
         _stateSpace.draw(point);
     }
+    // =================================================================================
+
+
+    // DRAW OBSTACLES
+    // =================================================================================
+    for (int i = 0; i < _obstacles.size(); i++){
+       _stateSpace.draw(_obstacles.at(i));
+    }
+    // =================================================================================
 }
