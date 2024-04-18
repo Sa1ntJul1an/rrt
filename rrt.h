@@ -33,6 +33,7 @@ class RRT{
         std::mt19937 _mt;
 
         Node sampleStateSpace();
+        std::vector<float> getUnitVector(std::vector<float>, std::vector<float>);
         void normalizeNodeToGrowthFactor(Node, Node&);
         Node* getClosestNode(Node);
         bool isCollision(std::vector<float>);

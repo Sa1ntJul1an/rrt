@@ -28,6 +28,19 @@ RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> s
     _mt = std::mt19937(time(nullptr));
 };
 
+std::vector<float> RRT::getUnitVector(std::vector<float> point_one, std::vector<float> point_two){
+    float distance = getEuclideanDistance(point_one, point_two);
+
+    float delta_x = point_two.at(0) - point_one.at(0);
+    float delta_y = point_two.at(1) - point_one.at(1);
+
+    float unit_x = delta_x / distance;
+    float unit_y = delta_y / distance;
+
+    std::vector<float> unit_vector = {unit_x, unit_y};
+    return unit_vector;
+}
+
 void RRT::normalizeNodeToGrowthFactor(Node closestNode, Node& newNode){
     float distance = getEuclideanDistance(closestNode.getPosition(), newNode.getPosition());
     
@@ -97,8 +110,25 @@ bool RRT::isObstacleInPath(Node parent, Node newNode){
     std::vector<float> parent_position = parent.getPosition();
     std::vector<float> newNode_position = newNode.getPosition();
 
-    if (isCollision(newNode_position)){
+    float distance_to_node = getEuclideanDistance(parent_position, newNode_position);
+
+    if (isCollision(newNode_position)){     // if new node is in an obstacle, return true
         return true;
+    }
+
+    std::vector<float> unit_vector_parent_to_child = getUnitVector(parent_position, newNode_position);
+    float segment_magnitude = distance_to_node / _obstacle_detection_segments;      // magnitude of each vector along path from parent to child node
+
+    for (int i = 0; i < _obstacle_detection_segments; i++){
+        // get x and y position of each segment along vector from parent to child
+        float current_x = parent_position.at(0) + unit_vector_parent_to_child.at(0) * segment_magnitude * i;
+        float current_y = parent_position.at(1) + unit_vector_parent_to_child.at(1) * segment_magnitude * i;
+
+        std::vector<float> current_position = {current_x, current_y};
+
+        if (isCollision(current_position)){
+            return true;
+        }
     }
     
     return false;
@@ -196,4 +226,24 @@ void RRT::draw(){
        _stateSpace.draw(_obstacles.at(i));
     }
     // =================================================================================
+
+    // DRAW START AND GOAL
+    // =================================================================================
+    sf::CircleShape start;
+    sf::CircleShape goal;
+
+    start.setFillColor(sf::Color::Cyan);
+    int start_radius = 20;
+    start.setRadius(20);
+    start.setPosition(sf::Vector2f(_startPosition.at(0) - start_radius/2, _startPosition.at(1) - start_radius/2));
+
+    goal.setFillColor(sf::Color::Green);
+    goal.setRadius(_tolerance);
+    goal.setPosition(sf::Vector2f(_endPosition.at(0), _endPosition.at(1)));
+
+    _stateSpace.draw(start);
+    _stateSpace.draw(goal);
+    // =================================================================================
+
+
 }
