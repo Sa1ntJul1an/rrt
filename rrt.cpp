@@ -232,14 +232,14 @@ void RRT::draw(){
     sf::CircleShape start;
     sf::CircleShape goal;
 
-    start.setFillColor(sf::Color::Cyan);
+    start.setFillColor(sf::Color::Green);
     int start_radius = _tolerance;
     start.setRadius(start_radius);
     start.setPosition(sf::Vector2f(_startPosition.at(0) - start_radius/2, _startPosition.at(1) - start_radius/2));
 
-    goal.setFillColor(sf::Color::Green);
+    goal.setFillColor(sf::Color::Red);
     goal.setRadius(_tolerance);
-    goal.setPosition(sf::Vector2f(_endPosition.at(0), _endPosition.at(1)));
+    goal.setPosition(sf::Vector2f(_endPosition.at(0) - _tolerance/2, _endPosition.at(1) - _tolerance/2));
 
     _stateSpace.draw(start);
     _stateSpace.draw(goal);

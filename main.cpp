@@ -63,6 +63,8 @@ int main(){
     obstacle_preview.setFillColor(Color::Magenta);
     Vector2i obstacle_corner;
 
+    bool sim_started = false;
+
     while(renderWindow.isOpen()){
 
         renderWindow.clear();
@@ -75,7 +77,7 @@ int main(){
         }
 
         if (Mouse::isButtonPressed(Mouse::Left)){
-            if (!drawing_obstacle){     // if not drawing an obstacle and mouse pressed, begin drawing it
+            if (!drawing_obstacle && !rrt_running && !sim_started){     // if not drawing an obstacle, sim hasn't started, and mouse pressed, begin drawing it
                 obstacle_corner = mousePosition;
                 obstacle_preview.setPosition(Vector2f(obstacle_corner.x, obstacle_corner.y));
                 drawing_obstacle = true;
@@ -92,12 +94,12 @@ int main(){
             rrt.update();
 
             iterationText.setString("Iteration: " + to_string(iteration));
-            renderWindow.draw(iterationText);
         }
         // =========================================================
 
         // KEYBOARD EVENTS =========================================
         if (Keyboard::isKeyPressed(Keyboard::Space)){   // space to pause / unpause
+            sim_started = true;
             rrt_running = !rrt_running;
         }
         if (Keyboard::isKeyPressed(Keyboard::R)){       // R to reset
@@ -118,13 +120,27 @@ int main(){
         }
         // =========================================================
 
-        // DRAW OBSTACLE PREVIEWS ==================================
+        // DRAW OBSTACLE AND START/STOP PREVIEWS ===================
         if (!rrt_running){
             for (int i = 0; i < obstacle_previews.size(); i++){
                 renderWindow.draw(obstacle_previews.at(i));
             }
+
+            CircleShape start;
+            start.setFillColor(Color::Green);
+            start.setPosition(Vector2f(START.at(0) - TOLERANCE/2, START.at(1) - TOLERANCE/2));
+            start.setRadius(TOLERANCE);
+            renderWindow.draw(start);
+
+            CircleShape end;
+            end.setFillColor(Color::Red);
+            end.setPosition(Vector2f(END.at(0) - TOLERANCE/2, END.at(1) - TOLERANCE/2));
+            end.setRadius(TOLERANCE);
+            renderWindow.draw(end);
         }
         // =========================================================
+
+        renderWindow.draw(iterationText);
 
         rrt.draw();
 
