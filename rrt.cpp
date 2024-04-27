@@ -233,8 +233,8 @@ void RRT::draw(){
     sf::CircleShape goal;
 
     start.setFillColor(sf::Color::Cyan);
-    int start_radius = 20;
-    start.setRadius(20);
+    int start_radius = _tolerance;
+    start.setRadius(start_radius);
     start.setPosition(sf::Vector2f(_startPosition.at(0) - start_radius/2, _startPosition.at(1) - start_radius/2));
 
     goal.setFillColor(sf::Color::Green);

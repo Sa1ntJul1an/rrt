@@ -39,10 +39,10 @@ int main(){
     int max_iterations = 1000;
 
     // RENDER WINDOW
-    // =======================================================================
+    // =========================================================
     RenderWindow renderWindow(VideoMode(WIDTH, HEIGHT), "RRT");
     renderWindow.setFramerateLimit(10);
-    // =======================================================================
+    // =========================================================
 
     RRT rrt(renderWindow, GROWTH_FACTOR, START, END, TOLERANCE, OBSTACLE_DECETION_SEGMENTS);
 
@@ -79,13 +79,11 @@ int main(){
                 obstacle_corner = mousePosition;
                 obstacle_preview.setPosition(Vector2f(obstacle_corner.x, obstacle_corner.y));
                 drawing_obstacle = true;
-            } else{                     // if drawing an obstacle and mouse clicked, freeze obstacle, add it to vector of obstacle previews and add to rrt state space
-                obstacle_previews.push_back(obstacle_preview);
-                rrt.addObstacle(obstacle_preview);
-                drawing_obstacle = false;
             }
-        } else if (Mouse::isButtonPressed(Mouse::Right)) {
-            
+        } else if (drawing_obstacle) {      // if drawing an obstacle and mouse released, freeze obstacle, add it to vector of obstacle previews and add to rrt state space
+            obstacle_previews.push_back(obstacle_preview);
+            rrt.addObstacle(obstacle_preview);
+            drawing_obstacle = false;
         }
 
         // RRT ====================================================
@@ -110,7 +108,7 @@ int main(){
 
 
         // CLOSE WINDOWS IF X PRESSED
-        // ==========================================================
+        // =========================================================
         Event renderWindowEvent;
 
         while(renderWindow.pollEvent(renderWindowEvent)){
@@ -118,15 +116,15 @@ int main(){
                 renderWindow.close();
             }
         }
-        // ==========================================================
+        // =========================================================
 
-        // DRAW OBSTACLE PREVIEWS ===================================
+        // DRAW OBSTACLE PREVIEWS ==================================
         if (!rrt_running){
             for (int i = 0; i < obstacle_previews.size(); i++){
                 renderWindow.draw(obstacle_previews.at(i));
             }
         }
-        // ==========================================================
+        // =========================================================
 
         rrt.draw();
 
