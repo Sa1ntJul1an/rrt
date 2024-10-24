@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> start, std::vector<float> end, float tolerance, int obstacle_detection_segments)
+RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> start, std::vector<float> end, float tolerance, int obstacle_detection_segments, float bias_towards_goal)
     : _stateSpace(stateSpace) {
     
     std::vector<sf::RectangleShape> _obstacles = {};
@@ -19,6 +19,8 @@ RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> s
 
     _startPosition = start;
     _endPosition = end;
+
+    _bias = bias_towards_goal;
 
     std::set<Node*> children;
     _startNode = Node(_startPosition, nullptr, children);
@@ -156,13 +158,15 @@ void RRT::update(){
     Node* parent = new Node(*closestNode);
     newNode.setParent(parent);
 
-    //std::cout << std::to_string(newNode.getParent()->getPosition()[0]) << std::endl;
-
     _nodes.push_back(newNode);
-    
-    // is it within range of end goal? 
-        // yes -> done, back trace parents to start node 
-        // no -> continue
+
+    if (getEuclideanDistance(newNode.getPosition(), _endPosition) < _tolerance){
+        _goalReached = true;
+    }
+}
+
+bool RRT::isGoalReached(){
+    return this->_goalReached;
 }
 
 void RRT::draw(){

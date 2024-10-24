@@ -19,7 +19,7 @@ const int HEIGHT = 1000;
 vector<int> STATE_SPACE = {WIDTH, HEIGHT};      // render window state space, contains obstacles, start, and end position
 
 const int GROWTH_FACTOR = 100;                  // growth factor (euclidean distance) of new nodes being added to tree
-const float TOLERANCE = 20;                     // euclidean distance tolerance to end position
+const float TOLERANCE = 40;                     // euclidean distance tolerance to end position
 const int OBSTACLE_DECETION_SEGMENTS = 15;      // number of segments between new node and closest node to check for collision
 
 float LINE_WIDTH = 3.0;
@@ -28,6 +28,7 @@ float NODE_RADIUS = 4.0;
 const vector<float> START = {200, 300};
 const vector<float> END = {800, 900};
 
+const float BIAS_TOWARDS_GOAL = 0.6;
 
 int main(){
 
@@ -64,6 +65,7 @@ int main(){
     Vector2i obstacle_corner;
 
     bool sim_started = false;
+    bool goal_reached = false;
 
     while(renderWindow.isOpen()){
 
@@ -89,9 +91,11 @@ int main(){
         }
 
         // RRT ====================================================
-        if (rrt_running){
+        if (rrt_running && !goal_reached){
             iteration ++;
             rrt.update();
+
+            goal_reached = rrt.isGoalReached();
 
             iterationText.setString("Iteration: " + to_string(iteration));
         }
@@ -140,9 +144,8 @@ int main(){
         }
         // =========================================================
 
-        renderWindow.draw(iterationText);
-
         rrt.draw();
+        renderWindow.draw(iterationText);
 
         renderWindow.display();
     }

@@ -9,13 +9,15 @@
 
 class RRT{
     public:
-        RRT(sf::RenderWindow&, float, std::vector<float>, std::vector<float>, float, int);
+        RRT(sf::RenderWindow&, float, std::vector<float>, std::vector<float>, float, int, float);
 
         void addObstacle(sf::RectangleShape);
         float getEuclideanDistance(std::vector<float>, std::vector<float>);
         
         void draw();
         void update();
+
+        bool isGoalReached();
 
     private:
         sf::RenderWindow& _stateSpace;
@@ -31,6 +33,9 @@ class RRT{
         std::vector<Node> _nodes;
 
         std::mt19937 _mt;
+
+        bool _goalReached = false;
+        float _bias;
 
         Node sampleStateSpace();
         std::vector<float> getUnitVector(std::vector<float>, std::vector<float>);
