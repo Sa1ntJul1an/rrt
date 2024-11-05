@@ -196,8 +196,8 @@ void RRT::draw(){
 
         std::vector<float> newNode_position = currentNode.getPosition();
 
-        std::cout << "Node position: " << std::to_string(newNode_position.at(0)) << " " << std::to_string(newNode_position.at(1)) << std::endl;
-        std::cout << "Parent position: " << std::to_string(parent_position.at(0)) << " " << std::to_string(parent_position.at(1)) << std::endl;
+        // std::cout << "Node position: " << std::to_string(newNode_position.at(0)) << " " << std::to_string(newNode_position.at(1)) << std::endl;
+        // std::cout << "Parent position: " << std::to_string(parent_position.at(0)) << " " << std::to_string(parent_position.at(1)) << std::endl;
 
         float delta_x = parent_position.at(0) - newNode_position.at(0);
         float delta_y = parent_position.at(1) - newNode_position.at(1);
@@ -206,20 +206,18 @@ void RRT::draw(){
 
         float distance = getEuclideanDistance(parent_position, newNode_position);
 
-        sf::RectangleShape line;
-        line.setSize(sf::Vector2f(distance, LINE_WIDTH));
-        line.setFillColor(sf::Color::Yellow);
-        line.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
-        line.setRotation(theta);
+        _line.setSize(sf::Vector2f(distance, LINE_WIDTH));
+        _line.setFillColor(sf::Color::Yellow);
+        _line.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
+        _line.setRotation(theta);
 
-        _stateSpace.draw(line);
+        _stateSpace.draw(_line);
 
-        sf::CircleShape point;
-        point.setRadius(NODE_RADIUS);
-        point.setFillColor(sf::Color::Red);
-        point.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
+        _point.setRadius(NODE_RADIUS);
+        _point.setFillColor(sf::Color::Red);
+        _point.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
 
-        _stateSpace.draw(point);
+        _stateSpace.draw(_point);
     }
     // =================================================================================
 
@@ -233,20 +231,18 @@ void RRT::draw(){
 
     // DRAW START AND GOAL
     // =================================================================================
-    sf::CircleShape start;
-    sf::CircleShape goal;
 
-    start.setFillColor(sf::Color::Green);
+    _start.setFillColor(sf::Color::Green);
     int start_radius = _tolerance;
-    start.setRadius(start_radius);
-    start.setPosition(sf::Vector2f(_startPosition.at(0) - start_radius/2, _startPosition.at(1) - start_radius/2));
+    _start.setRadius(start_radius);
+    _start.setPosition(sf::Vector2f(_startPosition.at(0) - start_radius/2, _startPosition.at(1) - start_radius/2));
 
-    goal.setFillColor(sf::Color::Red);
-    goal.setRadius(_tolerance);
-    goal.setPosition(sf::Vector2f(_endPosition.at(0) - _tolerance/2, _endPosition.at(1) - _tolerance/2));
+    _goal.setFillColor(sf::Color::Red);
+    _goal.setRadius(_tolerance);
+    _goal.setPosition(sf::Vector2f(_endPosition.at(0) - _tolerance/2, _endPosition.at(1) - _tolerance/2));
 
-    _stateSpace.draw(start);
-    _stateSpace.draw(goal);
+    _stateSpace.draw(_start);
+    _stateSpace.draw(_goal);
     // =================================================================================
 
 

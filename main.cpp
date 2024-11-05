@@ -45,7 +45,7 @@ int main(){
     renderWindow.setFramerateLimit(10);
     // =========================================================
 
-    RRT rrt(renderWindow, GROWTH_FACTOR, START, END, TOLERANCE, OBSTACLE_DECETION_SEGMENTS);
+    RRT rrt(renderWindow, GROWTH_FACTOR, START, END, TOLERANCE, OBSTACLE_DECETION_SEGMENTS, BIAS_TOWARDS_GOAL);
 
     Font font;
     FileInputStream fontIn;
@@ -66,6 +66,10 @@ int main(){
 
     bool sim_started = false;
     bool goal_reached = false;
+
+    CircleShape start;
+    CircleShape end;
+    Event renderWindowEvent;
 
     while(renderWindow.isOpen()){
 
@@ -115,7 +119,6 @@ int main(){
 
         // CLOSE WINDOWS IF X PRESSED
         // =========================================================
-        Event renderWindowEvent;
 
         while(renderWindow.pollEvent(renderWindowEvent)){
             if(renderWindowEvent.type == Event::Closed){
@@ -130,13 +133,11 @@ int main(){
                 renderWindow.draw(obstacle_previews.at(i));
             }
 
-            CircleShape start;
             start.setFillColor(Color::Green);
             start.setPosition(Vector2f(START.at(0) - TOLERANCE/2, START.at(1) - TOLERANCE/2));
             start.setRadius(TOLERANCE);
             renderWindow.draw(start);
 
-            CircleShape end;
             end.setFillColor(Color::Red);
             end.setPosition(Vector2f(END.at(0) - TOLERANCE/2, END.at(1) - TOLERANCE/2));
             end.setRadius(TOLERANCE);

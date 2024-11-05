@@ -43,6 +43,13 @@ class RRT{
         Node* getClosestNode(Node);
         bool isCollision(std::vector<float>);
         bool isObstacleInPath(Node, Node);
+
+        // SFML OBJECTS
+        sf::RectangleShape _line;
+        sf::CircleShape _point;
+        sf::CircleShape _start;
+        sf::CircleShape _goal;
+
 };
 
 #endif /* !RRT_HEADER */
