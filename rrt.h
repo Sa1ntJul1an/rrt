@@ -23,6 +23,10 @@ class RRT{
         sf::RenderWindow& _stateSpace;
         std::vector<sf::RectangleShape> _obstacles;
 
+        const float _NODE_RADIUS = 4.0;
+        sf::Color _lineColor;
+        sf::Color _nodeColor;
+
         float _growthFactor;
         float _tolerance;
         int _obstacle_detection_segments;
@@ -30,6 +34,7 @@ class RRT{
         std::vector<float> _endPosition;
 
         Node _startNode;
+        Node _endNode;
         std::vector<Node> _nodes;
 
         std::mt19937 _mt;
@@ -37,19 +42,19 @@ class RRT{
         bool _goalReached = false;
         float _bias;
 
+        // SFML OBJECTS
+        sf::CircleShape _point;
+        sf::CircleShape _start;
+        sf::CircleShape _goal;
+
+        // private functions
         Node sampleStateSpace();
         std::vector<float> getUnitVector(std::vector<float>, std::vector<float>);
         void normalizeNodeToGrowthFactor(Node, Node&);
         Node* getClosestNode(Node);
         bool isCollision(std::vector<float>);
         bool isObstacleInPath(Node, Node);
-
-        // SFML OBJECTS
-        sf::RectangleShape _line;
-        sf::CircleShape _point;
-        sf::CircleShape _start;
-        sf::CircleShape _goal;
-
+        void traceBackToStart(Node);
 };
 
 #endif /* !RRT_HEADER */

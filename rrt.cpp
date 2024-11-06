@@ -28,6 +28,20 @@ RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> s
     _nodes.push_back(_startNode);
 
     _mt = std::mt19937(time(nullptr));
+
+    _lineColor = sf::Color::Yellow;
+
+    _start.setFillColor(sf::Color::Green);
+    int start_radius = _tolerance;
+    _start.setRadius(start_radius);
+    _start.setPosition(sf::Vector2f(_startPosition.at(0) - start_radius/2.0, _startPosition.at(1) - start_radius/2.0));
+
+    _goal.setFillColor(sf::Color::Red);
+    _goal.setRadius(_tolerance);
+    _goal.setPosition(sf::Vector2f(_endPosition.at(0) - _tolerance/2.0, _endPosition.at(1) - _tolerance/2.0));
+
+    _point.setRadius(_NODE_RADIUS);
+    _point.setFillColor(sf::Color::Red);
 };
 
 std::vector<float> RRT::getUnitVector(std::vector<float> point_one, std::vector<float> point_two){
@@ -161,7 +175,11 @@ void RRT::update(){
     _nodes.push_back(newNode);
 
     if (getEuclideanDistance(newNode.getPosition(), _endPosition) < _tolerance){
+        _lineColor = sf::Color(70, 70, 0);
+        _point.setFillColor(sf::Color(90, 0, 0));
+
         _goalReached = true;
+        _endNode = newNode;
     }
 }
 
@@ -170,10 +188,6 @@ bool RRT::isGoalReached(){
 }
 
 void RRT::draw(){
-
-    float LINE_WIDTH = 3.0;
-    float NODE_RADIUS = 4.0;
-
 
     if (_nodes.size() < 2){
         return;
@@ -201,15 +215,17 @@ void RRT::draw(){
 
         sf::Vertex line[] =
         {
-            sf::Vertex(sf::Vector2f(parent_position.at(0), parent_position.at(1)), sf::Color::Yellow),
-            sf::Vertex(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)), sf::Color::Yellow)
+            sf::Vertex(sf::Vector2f(parent_position.at(0), parent_position.at(1)), _lineColor),
+            sf::Vertex(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)), _lineColor)
         };
 
         _stateSpace.draw(line, 2, sf::Lines);
 
-        _point.setRadius(NODE_RADIUS);
-        _point.setFillColor(sf::Color::Red);
-        _point.setPosition(sf::Vector2f(newNode_position.at(0) - NODE_RADIUS, newNode_position.at(1) - NODE_RADIUS));
+        _point.setPosition(sf::Vector2f(newNode_position.at(0) - _NODE_RADIUS, newNode_position.at(1) - _NODE_RADIUS));
+
+        if (_goalReached) {
+            traceBackToStart(_endNode);
+        }
 
         _stateSpace.draw(_point);
     }
@@ -225,17 +241,27 @@ void RRT::draw(){
 
     // DRAW START AND GOAL
     // =================================================================================
-
-    _start.setFillColor(sf::Color::Green);
-    int start_radius = _tolerance;
-    _start.setRadius(start_radius);
-    _start.setPosition(sf::Vector2f(_startPosition.at(0) - start_radius/2, _startPosition.at(1) - start_radius/2));
-
-    _goal.setFillColor(sf::Color::Red);
-    _goal.setRadius(_tolerance);
-    _goal.setPosition(sf::Vector2f(_endPosition.at(0) - _tolerance/2, _endPosition.at(1) - _tolerance/2));
-
     _stateSpace.draw(_start);
     _stateSpace.draw(_goal);
     // =================================================================================
+}
+
+void RRT::traceBackToStart(Node currentNode) {
+    Node* parent = currentNode.getParent();
+
+    while (parent != nullptr) {
+        std::vector<float> parent_position = parent->getPosition();
+        std::vector<float> currentNode_position = currentNode.getPosition();
+
+        sf::Vertex line[] =
+            {
+                sf::Vertex(sf::Vector2f(parent_position.at(0), parent_position.at(1)), sf::Color::Cyan),
+                sf::Vertex(sf::Vector2f(currentNode_position.at(0), currentNode_position.at(1)), sf::Color::Cyan)
+            };
+
+        _stateSpace.draw(line, 2, sf::Lines);
+
+        currentNode = *parent;
+        parent = currentNode.getParent();
+    }
 }

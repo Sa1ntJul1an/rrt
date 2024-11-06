@@ -7,7 +7,6 @@
 #include "node.h"
 #include "rrt.h"
 
-// mingw32-make.exe
 
 using namespace sf;
 using namespace std;
@@ -22,11 +21,9 @@ const int GROWTH_FACTOR = 50;                  // growth factor (euclidean dista
 const float TOLERANCE = 40;                     // euclidean distance tolerance to end position
 const int OBSTACLE_DECETION_SEGMENTS = 15;      // number of segments between new node and closest node to check for collision
 
-float LINE_WIDTH = 3.0;
-float NODE_RADIUS = 4.0;
 
 const vector<float> START = {200, 300};
-const vector<float> END = {800, 900};
+const vector<float> END = {1500, 900};
 
 const float BIAS_TOWARDS_GOAL = 0.6;
 
@@ -37,12 +34,10 @@ int main(){
     bool rrt_running = false;
     int iteration = 0;
 
-    int max_iterations = 1000;
-
     // RENDER WINDOW
     // =========================================================
     RenderWindow renderWindow(VideoMode(WIDTH, HEIGHT), "RRT");
-    renderWindow.setFramerateLimit(10);
+    renderWindow.setFramerateLimit(60);
     // =========================================================
 
     RRT rrt(renderWindow, GROWTH_FACTOR, START, END, TOLERANCE, OBSTACLE_DECETION_SEGMENTS, BIAS_TOWARDS_GOAL);
@@ -66,6 +61,8 @@ int main(){
 
     bool sim_started = false;
     bool goal_reached = false;
+
+    bool spacebar_held = false;
 
     CircleShape start;
     CircleShape end;
@@ -106,14 +103,14 @@ int main(){
         // =========================================================
 
         // KEYBOARD EVENTS =========================================
-        if (Keyboard::isKeyPressed(Keyboard::Space)){   // space to pause / unpause
+        if (Keyboard::isKeyPressed(Keyboard::Space) && !spacebar_held){   // space to pause / unpause
             sim_started = true;
             rrt_running = !rrt_running;
+            spacebar_held = true;
+        } else if (!Keyboard::isKeyPressed(Keyboard::Space)) {
+            spacebar_held = false;
         }
-        if (Keyboard::isKeyPressed(Keyboard::R)){       // R to reset
-            iteration = 0;
-            rrt_running = false;
-        }
+        
         // =========================================================
 
 
