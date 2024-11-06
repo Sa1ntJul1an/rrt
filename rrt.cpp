@@ -199,23 +199,17 @@ void RRT::draw(){
         // std::cout << "Node position: " << std::to_string(newNode_position.at(0)) << " " << std::to_string(newNode_position.at(1)) << std::endl;
         // std::cout << "Parent position: " << std::to_string(parent_position.at(0)) << " " << std::to_string(parent_position.at(1)) << std::endl;
 
-        float delta_x = parent_position.at(0) - newNode_position.at(0);
-        float delta_y = parent_position.at(1) - newNode_position.at(1);
+        sf::Vertex line[] =
+        {
+            sf::Vertex(sf::Vector2f(parent_position.at(0), parent_position.at(1)), sf::Color::Yellow),
+            sf::Vertex(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)), sf::Color::Yellow)
+        };
 
-        float theta = (180 / 3.141592654) * atan2(delta_y, delta_x);
-
-        float distance = getEuclideanDistance(parent_position, newNode_position);
-
-        _line.setSize(sf::Vector2f(distance, LINE_WIDTH));
-        _line.setFillColor(sf::Color::Yellow);
-        _line.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
-        _line.setRotation(theta);
-
-        _stateSpace.draw(_line);
+        _stateSpace.draw(line, 2, sf::Lines);
 
         _point.setRadius(NODE_RADIUS);
         _point.setFillColor(sf::Color::Red);
-        _point.setPosition(sf::Vector2f(newNode_position.at(0), newNode_position.at(1)));
+        _point.setPosition(sf::Vector2f(newNode_position.at(0) - NODE_RADIUS, newNode_position.at(1) - NODE_RADIUS));
 
         _stateSpace.draw(_point);
     }
@@ -244,6 +238,4 @@ void RRT::draw(){
     _stateSpace.draw(_start);
     _stateSpace.draw(_goal);
     // =================================================================================
-
-
 }
