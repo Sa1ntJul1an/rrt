@@ -48,7 +48,7 @@ int main(){
     font.loadFromStream(fontIn);
 
     Text iterationText;
-    iterationText.setFillColor(Color::Red);
+    iterationText.setFillColor(Color::White);
     iterationText.setPosition(10, 10);
     iterationText.setFont(font);
     iterationText.setCharacterSize(30);
