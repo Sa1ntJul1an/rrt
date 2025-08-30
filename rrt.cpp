@@ -8,7 +8,7 @@
 #include <ctime>
 
 
-RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> start, std::vector<float> end, float tolerance, int obstacle_detection_segments, float bias_towards_goal)
+RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> start, std::vector<float> end, float tolerance, int obstacle_detection_segments, float random_sample_probability)
   : _stateSpace(stateSpace) {
   
   std::vector<sf::RectangleShape> _obstacles = {};
@@ -19,7 +19,7 @@ RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> s
   _startPosition = start;
   _endPosition = end;
 
-  _bias = bias_towards_goal;
+  _random_sample_probability = random_sample_probability;
 
   _mt = std::mt19937(time(nullptr));
 

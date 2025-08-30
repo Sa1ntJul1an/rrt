@@ -43,7 +43,7 @@ class RRT{
 
     bool _searchStarted = false;
     bool _goalReached = false;
-    float _bias;
+    float _random_sample_probability;
 
     // SFML OBJECTS
     sf::CircleShape _point;
