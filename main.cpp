@@ -86,22 +86,24 @@ int main(){
     mousePosition = Mouse::getPosition(renderWindow);
 
     if (Mouse::isButtonPressed(Mouse::Left)){
-      if (!sim_started) {
-        if (!start_placed) {
-          start_pos = {float(mousePosition.x), float(mousePosition.y)};
-          start.setPosition(Vector2f(start_pos[0] - start.getRadius(), start_pos[1] - start.getRadius()));
-        } else if (!goal_placed) {
-          end_pos = {float(mousePosition.x), float(mousePosition.y)};
-          end.setPosition(Vector2f(end_pos[0] - TOLERANCE, end_pos[1] - TOLERANCE));
-        } else if (!placing_object && !rrt_running && !sim_started){     // if not drawing an obstacle, sim hasn't started, and mouse pressed, begin drawing it
-          obstacle_corner = mousePosition;
-          obstacle_preview.setPosition(Vector2f(obstacle_corner.x, obstacle_corner.y));
-        } else if (placing_object) {    // drawing obstacle
-          obstacle_preview.setSize(Vector2f(mousePosition.x - obstacle_corner.x, mousePosition.y - obstacle_corner.y));
-          renderWindow.draw(obstacle_preview);
+      if (mousePosition.x < WIDTH && mousePosition.x > 0.0 && mousePosition.y > 0.0 && mousePosition.y < HEIGHT) {
+        if (!sim_started) {
+          if (!start_placed) {
+            start_pos = {float(mousePosition.x), float(mousePosition.y)};
+            start.setPosition(Vector2f(start_pos[0] - start.getRadius(), start_pos[1] - start.getRadius()));
+          } else if (!goal_placed) {
+            end_pos = {float(mousePosition.x), float(mousePosition.y)};
+            end.setPosition(Vector2f(end_pos[0] - TOLERANCE, end_pos[1] - TOLERANCE));
+          } else if (!placing_object && !rrt_running && !sim_started){     // if not drawing an obstacle, sim hasn't started, and mouse pressed, begin drawing it
+            obstacle_corner = mousePosition;
+            obstacle_preview.setPosition(Vector2f(obstacle_corner.x, obstacle_corner.y));
+          } else if (placing_object) {    // drawing obstacle
+            obstacle_preview.setSize(Vector2f(mousePosition.x - obstacle_corner.x, mousePosition.y - obstacle_corner.y));
+            renderWindow.draw(obstacle_preview);
+          }
+          placing_object = true;
+          mouse_held = true;
         }
-        placing_object = true;
-        mouse_held = true;
       }
     } else if (placing_object) {      // if drawing an object and mouse released, freeze object in place (stop updating its position)
       if (!start_placed) {
