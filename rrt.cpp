@@ -19,7 +19,11 @@ RRT::RRT (sf::RenderWindow& stateSpace, float growthFactor, std::vector<float> s
   _startPosition = start;
   _endPosition = end;
 
-  _random_sample_probability = random_sample_probability;
+  if (random_sample_probability > 1.0 || random_sample_probability < 0.0) {
+    _random_sample_probability = 1.0;
+  } else {
+    _random_sample_probability = random_sample_probability;
+  }
 
   _mt = std::mt19937(time(nullptr));
 
@@ -78,10 +82,22 @@ float RRT::getEuclideanDistance(std::vector<float> node1Position, std::vector<fl
 
 Node RRT::sampleStateSpace(){
   // generate new point in state space
-  std::uniform_real_distribution<float> x_dist(0, _stateSpace.getSize().x);
-  std::uniform_real_distribution<float> y_dist(0,  _stateSpace.getSize().y);
+  float new_x, new_y;
 
-  std::vector<float> newPoint = {x_dist(_mt), y_dist(_mt)};
+  std::uniform_real_distribution<float> random_sample_dist(0, 1.0);
+  if (random_sample_dist(_mt) < _random_sample_probability) {
+    std::uniform_real_distribution<float> x_dist(0, _stateSpace.getSize().x);
+    std::uniform_real_distribution<float> y_dist(0,  _stateSpace.getSize().y);
+
+    new_x = x_dist(_mt);
+    new_y = y_dist(_mt);
+  } else {
+    new_x = _endPosition[0];
+    new_y = _endPosition[1];
+  }
+
+
+  std::vector<float> newPoint = {new_x, new_y};
 
   std::set<Node*> children;
   Node newNode = Node(newPoint, nullptr, children);
