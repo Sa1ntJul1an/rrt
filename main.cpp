@@ -17,7 +17,7 @@ const int HEIGHT = 1000;
 
 vector<int> STATE_SPACE = {WIDTH, HEIGHT};      // render window state space, contains obstacles, start, and end position
 
-const int GROWTH_FACTOR = 20;                   // growth factor (euclidean distance) of new nodes being added to tree
+const int GROWTH_FACTOR = 10;                   // growth factor (euclidean distance) of new nodes being added to tree
 const float TOLERANCE = 40;                     // euclidean distance tolerance to end position
 const int OBSTACLE_DECETION_SEGMENTS = 15;      // number of segments between new node and closest node to check for collision
 
